@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import Source.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -37,7 +38,8 @@ public class Main {
                 "}",
                 "}"
         };*/
-        String[] lines = null;
+        WordExtracer wordExtracerInstance = new WordExtracer();
+        String[] lines = wordExtracerInstance.execute();
 
         writeContentToFile(outputPath, lines);
     }

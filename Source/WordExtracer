@@ -1,6 +1,0 @@
-public  class WordExtracer{
-    private final Preprocessor pp;
-    public void Initialize(){
-        pp = new Preprocessor();
-    }
-}
