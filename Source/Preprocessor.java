@@ -1,60 +1,61 @@
 package Source;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 class Preprocessor {
-    public final String text;
-    String result = "";
+    String definePattern = "[^a-zA-Z0-9_]define +(.*?) +(.*)";
+    public String text;
     Map<String, String> defineMatches;
+    AtomicReference<String> ref = new AtomicReference<>(text);
 
     public Preprocessor(String text) {
         this.text = text;
         defineMatches = GetAllMatches();
     }
 
-    public String[] excute() {
-        result = RemoveProcess();
-
-        return ReplaceProcess();
+    public String excute() {
+        RemoveProcess();
+        ReplaceProcess();
+        return ref.get();
     }
 
     // replace defined value in text
-    private String[] ReplaceProcess() {
-        defineMatches.forEach((x, y) -> result = text.replaceAll(x, y));
-        return text.split("[\\n\\s\\t\\r\\b]");
-
+    private void ReplaceProcess() {
+        defineMatches.forEach((t, l) -> {
+            String pattern = "\\b(" + t + ")\\b";
+            Matcher m = Pattern.compile(pattern).matcher(ref.get());
+            while (m.find()) {
+                ref.set(m.replaceAll(l));
+            }
+        });
     }
 
     // remove define statements
-    private String RemoveProcess() {
+    private void RemoveProcess() {
         RemoveComments();
-        RemoveDefines();
-        return result;
     }
 
     private void RemoveComments() {
         String pattern = "(//.*)";
-        List<String> comments = Pattern.compile(pattern).matcher(text).results().map(x -> x.group(1))
-                .collect(Collectors.toList());
-        String result = text;
-        for (String x : comments) {
-            result = result.replace(x, "");
+        Matcher m = Pattern.compile(pattern).matcher(ref.get());
+        while (m.find()) {
+            ref.set(m.replaceAll(""));
         }
     }
 
-    private void RemoveDefines() {
-        defineMatches.forEach((x, y) -> result = result.replace("define " + x + " " + y, ""));
-    }
-
     private Map<String, String> GetAllMatches() {
-        String definePattern = ".*(?i)define\s*(.*?)\s+(.*)";
-
-        return Pattern.compile(definePattern).matcher(text).results()
-                .collect(Collectors.toMap(e -> e.group(1), e -> e.group(2)));
-
+        HashMap<String, String> map = new HashMap<String, String>();
+        Matcher m = Pattern.compile(definePattern).matcher(ref.get());
+        while (m.find()) {
+            ref.set(m.replaceAll(""));
+            map.put(m.group(1), m.group(2));
+        }
+        return map;
     }
 
 }
+// "[\+\=\-\[\]\{\}\r\t ](salam)[\+\=\-\[\]\{\}\r\t ]"g

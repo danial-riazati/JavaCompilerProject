@@ -5,7 +5,7 @@ public class WordExtracer {
 
   public WordExtracer() {
     pp = new Preprocessor("");
-
+    
   }
 
   public String[] execute() {
@@ -15,3 +15,4 @@ public class WordExtracer {
 }
 //(;|\(|\)|==|=|\+=|--|\+\+|!=|<=|>=|<|>|\+|-|!|[a-zA-Z]+\d*|\d+)\s*|\"(.*\s*)+\"
 // (;|\(|\)|==|=|\+=|--|\+\+|!=|<=|>=|<|>|\+|-|!|[a-zA-Z]+\d*|\d+)\s*|\"(.*\s*)*?\"
+// (\]|\[|}|{|;|\(|\)|==|=|\+=|--|\+\+|!=|<=|>=|<|>|\+|-|!|[a-zA-Z]+\d*|\d+) *|\"(.* *)*?\"
