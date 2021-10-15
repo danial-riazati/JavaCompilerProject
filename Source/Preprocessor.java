@@ -7,13 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Preprocessor {
-    String definePattern = "[^a-zA-Z0-9_]define +(.*?) +(.*)";
-    public String text;
+    String definePattern = "define +(.*?) +(.*)";
+    public String text="";
     Map<String, String> defineMatches;
-    AtomicReference<String> ref = new AtomicReference<>(text);
+    AtomicReference<String> ref;
 
     public Preprocessor(String text) {
         this.text = text;
+        ref = new AtomicReference<>(text);
         defineMatches = GetAllMatches();
     }
 
@@ -40,7 +41,7 @@ class Preprocessor {
     }
 
     private void RemoveComments() {
-        String pattern = "(//.*)";
+        String pattern = "/\\*(.|\\s)*?\\*/|(//.*)";
         Matcher m = Pattern.compile(pattern).matcher(ref.get());
         while (m.find()) {
             ref.set(m.replaceAll(""));
@@ -51,9 +52,10 @@ class Preprocessor {
         HashMap<String, String> map = new HashMap<String, String>();
         Matcher m = Pattern.compile(definePattern).matcher(ref.get());
         while (m.find()) {
-            ref.set(m.replaceAll(""));
             map.put(m.group(1), m.group(2));
         }
+        ref.set(m.replaceAll(""));
+        System.out.println(map.toString());
         return map;
     }
 
